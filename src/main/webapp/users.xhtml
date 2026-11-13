@@ -1,0 +1,198 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core">
+
+<h:head>
+    <title>Пользователи</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+</h:head>
+
+<h:body>
+
+    <div class="container">
+
+        <h:link outcome="index" value="← Home"/>
+
+        <h:form id="userForm">
+
+            <div class="page-header">
+
+                <h1>Пользователи</h1>
+
+                <div class="header-actions">
+
+                    <h:commandButton value="+"
+                                     action="#{userController.prepareNew}"
+                                     styleClass="icon-button add-button">
+                        <f:ajax execute="@this"
+                                render="userDialogContent"
+                                onevent="openUserDialog"/>
+                    </h:commandButton>
+
+                    <button type="button"
+                            class="icon-button edit-button"
+                            onclick="toggleEditMode()">
+                        ✎
+                    </button>
+
+                </div>
+
+            </div>
+
+            <h:messages id="messages"
+                        styleClass="messages"
+                        errorClass="error-message"/>
+
+            <h:panelGroup id="usersTableWrapper" layout="block">
+
+                <h:dataTable value="#{userController.users}"
+                             var="u"
+                             styleClass="data-table">
+
+
+                    <h:column>
+                        <f:facet name="header">Имя пользователя</f:facet>
+                        #{u.username}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Email</f:facet>
+                        #{u.email}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Дата регистрации</f:facet>
+                        #{u.registeredAt}
+                    </h:column>
+
+                    <h:column>
+
+                        <div class="row-actions">
+
+                            <h:commandButton value="✎"
+                                             action="#{userController.edit(u.id)}"
+                                             styleClass="small-edit">
+                                <f:ajax execute="@this"
+                                        render="userDialogContent"
+                                        onevent="openUserDialog"/>
+                            </h:commandButton>
+
+                            <h:commandButton value="✕"
+                                             action="#{userController.delete(u.id)}"
+                                             styleClass="small-delete"
+                                             onclick="return confirm('Удалить пользователя?');">
+                                <f:ajax execute="@this"
+                                        render="usersTableWrapper messages"/>
+                            </h:commandButton>
+
+                        </div>
+
+                    </h:column>
+
+                </h:dataTable>
+
+            </h:panelGroup>
+
+            <dialog id="userDialog" class="modal">
+
+                <h:panelGroup id="userDialogContent" layout="block">
+
+                    <h2>
+                        #{userController.user.id == null
+                          ? 'Добавить пользователя'
+                          : 'Редактировать пользователя'}
+                    </h2>
+
+                    <h:panelGrid columns="2">
+
+                        <h:outputLabel value="Имя пользователя:"/>
+
+                        <h:inputText
+                                value="#{userController.user.username}"
+                                required="true"
+                                requiredMessage="Введите имя пользователя"/>
+
+                        <h:outputLabel value="Email:"/>
+
+                        <h:inputText
+                                value="#{userController.user.email}"/>
+
+                        <h:outputLabel value="Дата регистрации:"/>
+
+                        <h:inputText
+                                value="#{userController.user.registeredAt}">
+                            <f:convertDateTime type="localDate"
+                                               pattern="yyyy-MM-dd"/>
+                        </h:inputText>
+
+                    </h:panelGrid>
+
+                    <div class="modal-actions">
+
+                        <h:commandButton value="Сохранить"
+                                         action="#{userController.save}"
+                                         styleClass="save-button">
+                            <f:ajax execute="@form"
+                                    render="usersTableWrapper userDialogContent messages"
+                                    onevent="closeUserDialog"/>
+                        </h:commandButton>
+
+                        <h:commandButton value="Отмена"
+                                         action="#{userController.cancel}"
+                                         immediate="true"
+                                         styleClass="cancel-button">
+                            <f:ajax execute="@this"
+                                    render="userDialogContent"
+                                    onevent="closeUserDialog"/>
+                        </h:commandButton>
+
+                    </div>
+
+                </h:panelGroup>
+
+            </dialog>
+
+        </h:form>
+
+    </div>
+
+    <script>
+
+        function openUserDialog(data) {
+            if (data.status === 'success') {
+
+                const dialog =
+                    document.getElementById('userDialog');
+
+                if (!dialog.open) {
+                    dialog.showModal();
+                }
+
+            }
+        }
+
+        function closeUserDialog(data) {
+            if (data.status === 'success') {
+
+                const messages =
+                    document.getElementById('userForm:messages');
+
+                if (!messages || messages.textContent.trim() === '') {
+
+                    document.getElementById('userDialog').close();
+
+                }
+
+            }
+        }
+
+        function toggleEditMode() {
+            document.body.classList.toggle('edit-mode');
+        }
+
+    </script>
+
+</h:body>
+</html>

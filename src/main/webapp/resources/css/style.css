@@ -1,0 +1,455 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: #08070d;
+    color: #f5f0ff;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1150px;
+    margin: 45px auto;
+    padding: 25px;
+}
+
+/* Ссылка назад */
+
+.container > a {
+    color: #bda4ff;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.container > a:hover {
+    color: #e0d2ff;
+}
+
+
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 35px 0 30px;
+}
+
+.page-header h1 {
+    color: #ffffff;
+    font-size: 30px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+/* Общие настройки круглых кнопок */
+
+.icon-button {
+    width: 43px;
+    height: 43px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.25s;
+    font-size: 25px;
+}
+
+/* Добавление */
+
+.add-button {
+    background: transparent;
+    color: #c9a7ff;
+    border: 1.5px solid #b98aff;
+}
+
+.add-button:hover {
+    background: rgba(185, 138, 255, 0.15);
+    box-shadow: 0 0 14px rgba(185, 138, 255, 0.35);
+    transform: scale(1.07);
+}
+
+/* Редактирование */
+
+.edit-button {
+    background: transparent;
+    color: #c9a7ff;
+    border: 1.5px solid #b98aff;
+}
+
+.edit-button:hover {
+    background: rgba(185, 138, 255, 0.15);
+    box-shadow: 0 0 14px rgba(185, 138, 255, 0.35);
+}
+
+
+.data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 13px;
+    table-layout: fixed;
+    background: transparent;
+    color: #f3edff;
+}
+
+/* Заголовки столбцов */
+
+.data-table th {
+    background: #08070d;
+    color: #c9a7ff;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    padding: 15px 18px;
+    border: none;
+    border-right: 1px dashed #8057b8;
+    letter-spacing: 0.3px;
+}
+
+/* Убираем последнюю пунктирную линию */
+
+.data-table th:last-child {
+    border-right: none;
+}
+
+/* Ячейки */
+
+.data-table td {
+    background: #100d19;
+    color: #eee6ff;
+    padding: 19px 18px;
+    border-top: 1px solid #8057b8;
+    border-bottom: 1px solid #8057b8;
+    border-right: 1px dashed #8057b8;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+/* Левая граница строки */
+
+.data-table td:first-child {
+    border-left: 1px solid #8057b8;
+    border-radius: 11px 0 0 11px;
+}
+
+/* Правая граница строки */
+
+.data-table td:last-child {
+    border-right: 1px solid #8057b8;
+    border-radius: 0 11px 11px 0;
+}
+
+/* Эффект при наведении */
+
+.data-table tbody tr:hover td {
+    background: #1a1228;
+    border-top-color: #bd91ff;
+    border-bottom-color: #bd91ff;
+}
+
+
+.row-actions {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    gap: 9px;
+}
+
+/* Включение режима редактирования */
+
+.edit-mode .row-actions {
+    display: flex;
+}
+
+/* Кнопка редактирования */
+
+.small-edit {
+    background: transparent;
+    color: #c9a7ff;
+    border: 1px solid #a77be8;
+    border-radius: 7px;
+    padding: 7px 11px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.small-edit:hover {
+    background: rgba(167, 123, 232, 0.2);
+}
+
+/* Кнопка удаления */
+
+.small-delete {
+    background: transparent;
+    color: #ff829d;
+    border: 1px solid #bd5575;
+    border-radius: 7px;
+    padding: 7px 11px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.small-delete:hover {
+    background: rgba(189, 85, 117, 0.2);
+}
+
+
+.modal {
+    background: #100d19;
+    color: #f5f0ff;
+    border: 1px solid #a77be8;
+    border-radius: 16px;
+    padding: 30px;
+    width: 440px;
+    max-width: calc(100% - 30px);
+    box-shadow: 0 0 35px rgba(143, 92, 214, 0.2);
+}
+
+.modal::backdrop {
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(4px);
+}
+
+.modal h2 {
+    color: #d4b8ff;
+    margin: 0 0 25px;
+    font-size: 22px;
+}
+
+/* Поля формы */
+
+.modal table {
+    width: 100%;
+}
+
+.modal td {
+    padding: 8px 5px;
+    color: #d9c9f2;
+    font-size: 13px;
+}
+
+.modal input {
+    width: 100%;
+    padding: 11px;
+    background: #08070d;
+    color: white;
+    border: 1px solid #7952a8;
+    border-radius: 7px;
+    outline: none;
+}
+
+.modal input:focus {
+    border-color: #c9a7ff;
+    box-shadow: 0 0 8px rgba(185, 138, 255, 0.25);
+}
+
+/* Кнопки модального окна */
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.save-button,
+.cancel-button {
+    padding: 10px 17px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.save-button {
+    background: #a77be8;
+    border: 1px solid #a77be8;
+    color: #100d19;
+    font-weight: 600;
+}
+
+.save-button:hover {
+    background: #c5a4ff;
+}
+
+.cancel-button {
+    background: transparent;
+    border: 1px solid #8057b8;
+    color: #d7c4f5;
+}
+
+.cancel-button:hover {
+    background: rgba(128, 87, 184, 0.2);
+}
+
+
+
+/* Скрываем последний столбец по умолчанию */
+.data-table th:last-child,
+.data-table td:last-child {
+    display: none;
+}
+
+/* Показываем его в режиме редактирования */
+.edit-mode .data-table th:last-child,
+.edit-mode .data-table td:last-child {
+    display: table-cell;
+}
+
+
+/* ==============================
+   ГЛАВНАЯ СТРАНИЦА
+   ============================== */
+
+.home-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 35px 0 45px;
+}
+
+.home-header h1 {
+    margin-bottom: 8px;
+}
+
+.home-subtitle {
+    margin: 0;
+    color: #888;
+    font-size: 15px;
+}
+
+.home-content {
+    margin-top: 35px;
+}
+
+.home-content h2 {
+    margin-bottom: 8px;
+}
+
+.home-description {
+    color: #888;
+    margin-bottom: 28px;
+}
+
+.menu {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.menu-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 28px;
+    min-height: 155px;
+
+    text-decoration: none;
+    color: inherit;
+
+    border: 1px solid var(--border-color, #7952a8);
+    border-radius: 12px;
+
+    transition: transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.menu-card:hover {
+    transform: translateY(-4px);
+    border-color: #7952a8;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+}
+
+.menu-icon {
+    font-size: 30px;
+    margin-bottom: 15px;
+    color: var(--accent-color, #7952a8);
+}
+
+.menu-title {
+    font-size: 19px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.menu-description {
+    font-size: 14px;
+    color: #888;
+}
+
+.home-footer {
+    margin-top: 55px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color, #7952a8);
+    color: #888;
+    font-size: 13px;
+}
+
+
+select,
+.form-select {
+    width: 100%;
+    min-height: 42px;
+
+    padding: 10px 42px 10px 13px;
+
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text-color, #333);
+
+    background-color: var(--input-bg, #7952a8);
+
+    border: 1px solid var(--border-color, #d5d5d5);
+    border-radius: 7px;
+
+    outline: none;
+    cursor: pointer;
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+
+    background-repeat: no-repeat;
+    background-position: right 13px center;
+    background-size: 16px;
+
+    transition: border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+select:hover,
+.form-select:hover {
+    border-color: #999;
+}
+
+select:focus,
+.form-select:focus {
+    border-color: var(--accent-color, #555);
+    box-shadow: 0 0 0 3px rgba(100, 100, 100, 0.12);
+}
+
+select option {
+    padding: 10px;
+    background: var(--input-bg, #7952a8);
+    color: var(--text-color, #333);
+}
+
+select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

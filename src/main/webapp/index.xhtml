@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html">
+
+<h:head>
+    <title>Music Streaming</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+</h:head>
+
+<h:body>
+
+    <div class="container">
+
+        <div class="home-header">
+
+            <div>
+                <h1>Музыкальный стриминговый сервис</h1>
+            </div>
+
+        </div>
+
+        <div class="home-content">
+
+            <div class="menu">
+
+                <h:link outcome="artists" styleClass="menu-card">
+                    <span class="menu-icon">♫</span>
+                    <span class="menu-title">Исполнители</span>
+                    <span class="menu-description">
+                        Управление исполнителями
+                    </span>
+                </h:link>
+
+                <h:link outcome="tracks" styleClass="menu-card">
+                    <span class="menu-icon">♪</span>
+                    <span class="menu-title">Треки</span>
+                    <span class="menu-description">
+                        Управление музыкальными композициями
+                    </span>
+                </h:link>
+
+                <h:link outcome="playlists" styleClass="menu-card">
+                    <span class="menu-icon">▤</span>
+                    <span class="menu-title">Плейлисты</span>
+                    <span class="menu-description">
+                        Создание и управление плейлистами
+                    </span>
+                </h:link>
+
+                <h:link outcome="users" styleClass="menu-card">
+                    <span class="menu-icon">♙</span>
+                    <span class="menu-title">Пользователи</span>
+                    <span class="menu-description">
+                        Управление пользователями системы
+                    </span>
+                </h:link>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</h:body>
+</html>

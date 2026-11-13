@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core">
+
+<h:head>
+    <title>Исполнители</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+</h:head>
+
+<h:body>
+
+    <div class="container">
+
+        <h:link outcome="index" value="← Home"/>
+
+        <h:form id="artistForm">
+
+            <div class="page-header">
+
+                <h1>Исполнители</h1>
+
+                <div class="header-actions">
+
+                    <h:commandButton value="+"
+                                     action="#{artistController.prepareNew}"
+                                     styleClass="icon-button add-button">
+                        <f:ajax execute="@this"
+                                render="artistDialogContent"
+                                onevent="openArtistDialog"/>
+                    </h:commandButton>
+
+                    <!-- Режим редактирования -->
+                    <button type="button"
+                            class="icon-button edit-button"
+                            onclick="toggleEditMode()">
+                        ✎
+                    </button>
+
+                </div>
+            </div>
+
+            <h:messages id="messages"
+                        styleClass="messages"
+                        errorClass="error-message"/>
+
+            <h:panelGroup id="artistsTableWrapper" layout="block">
+
+                <h:dataTable value="#{artistController.artists}"
+                             var="a"
+                             styleClass="data-table">
+
+                    <h:column>
+                        <f:facet name="header">Имя исполнителя</f:facet>
+                        #{a.name}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Страна</f:facet>
+                        #{a.country}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">
+                            Количество прослушиваний в месяц
+                        </f:facet>
+                        #{a.monthlyListeners}
+                    </h:column>
+
+                    <h:column>
+
+                        <div class="row-actions">
+
+                            <h:commandButton value="✎"
+                                             action="#{artistController.edit(a.id)}"
+                                             styleClass="small-edit">
+                                <f:ajax execute="@this"
+                                        render="artistDialogContent"
+                                        onevent="openArtistDialog"/>
+                            </h:commandButton>
+
+                            <h:commandButton value="✕"
+                                             action="#{artistController.delete(a.id)}"
+                                             styleClass="small-delete"
+                                             onclick="return confirm('Удалить исполнителя?');">
+                                <f:ajax execute="@this"
+                                        render="artistsTableWrapper"/>
+                            </h:commandButton>
+
+                        </div>
+
+                    </h:column>
+
+                </h:dataTable>
+
+            </h:panelGroup>
+
+            <dialog id="artistDialog" class="modal">
+
+                <h:panelGroup id="artistDialogContent" layout="block">
+
+                    <h2>
+                        #{artistController.artist.id == null
+                          ? 'Добавить исполнителя'
+                          : 'Редактировать исполнителя'}
+                    </h2>
+
+                    <h:panelGrid columns="2">
+
+                        <h:outputLabel value="Имя исполнителя:"/>
+
+                        <h:inputText
+                                value="#{artistController.artist.name}"
+                                required="true"
+                                requiredMessage="Введите имя исполнителя"/>
+
+                        <h:outputLabel value="Страна:"/>
+
+                        <h:inputText
+                                value="#{artistController.artist.country}"/>
+
+                        <h:outputLabel value="Прослушивания в месяц:"/>
+
+                        <h:inputText
+                                value="#{artistController.artist.monthlyListeners}"/>
+
+                    </h:panelGrid>
+
+                    <div class="modal-actions">
+
+                        <h:commandButton value="Сохранить"
+                                         action="#{artistController.save}"
+                                         styleClass="save-button">
+                            <f:ajax execute="@form"
+                                    render="artistsTableWrapper artistDialogContent messages"
+                                    onevent="closeArtistDialog"/>
+                        </h:commandButton>
+
+                        <button type="button"
+                                class="cancel-button"
+                                onclick="document.getElementById('artistDialog').close()">
+                            Отмена
+                        </button>
+
+                    </div>
+
+                </h:panelGroup>
+
+            </dialog>
+
+        </h:form>
+
+    </div>
+
+    <script>
+
+        function openArtistDialog(data) {
+            if (data.status === 'success') {
+                const dialog = document.getElementById('artistDialog');
+
+                if (!dialog.open) {
+                    dialog.showModal();
+                }
+            }
+        }
+
+        function closeArtistDialog(data) {
+            if (data.status === 'success') {
+                const messages =
+                    document.getElementById('artistForm:messages');
+
+                if (!messages || messages.textContent.trim() === '') {
+                    document.getElementById('artistDialog').close();
+                }
+            }
+        }
+
+        // переключение режима редактирования
+        function toggleEditMode() {
+            document.body.classList.toggle('edit-mode');
+        }
+
+    </script>
+
+</h:body>
+</html>

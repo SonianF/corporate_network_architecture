@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core">
+
+<h:head>
+    <title>Плейлисты</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+</h:head>
+
+<h:body>
+
+    <div class="container">
+
+        <h:link outcome="index" value="← Home"/>
+
+        <h:form id="playlistForm">
+
+            <div class="page-header">
+
+                <h1>Плейлисты</h1>
+
+                <div class="header-actions">
+
+                    <h:commandButton value="+"
+                                     action="#{playlistController.prepareNew}"
+                                     styleClass="icon-button add-button">
+                        <f:ajax execute="@this"
+                                render="playlistDialogContent"
+                                onevent="openPlaylistDialog"/>
+                    </h:commandButton>
+
+                    <button type="button"
+                            class="icon-button edit-button"
+                            onclick="toggleEditMode()">
+                        ✎
+                    </button>
+
+                </div>
+
+            </div>
+
+            <h:messages id="messages"
+                        styleClass="messages"
+                        errorClass="error-message"/>
+
+            <h:panelGroup id="playlistsTableWrapper" layout="block">
+
+                <h:dataTable value="#{playlistController.playlists}"
+                             var="p"
+                             styleClass="data-table">
+
+                    <h:column>
+                        <f:facet name="header">Название</f:facet>
+                        #{p.title}
+                        <h:commandButton value="♫"
+                                         action="#{playlistController.viewTracks(p.id)}"
+                                         styleClass="small-edit"
+                                         title="Перейти к трекам"
+                                         immediate="true"/>
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Пользователь</f:facet>
+                        #{p.user.username}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Количество треков</f:facet>
+                        #{p.tracks.size()}
+                    </h:column>
+
+                    <h:column>
+
+                        <div class="row-actions">
+
+                            <h:commandButton value="✎"
+                                             action="#{playlistController.edit(p.id)}"
+                                             styleClass="small-edit">
+                                <f:ajax execute="@this"
+                                        render="playlistDialogContent"
+                                        onevent="openPlaylistDialog"/>
+                            </h:commandButton>
+
+
+                            <h:commandButton value="✕"
+                                             action="#{playlistController.delete(p.id)}"
+                                             styleClass="small-delete"
+                                             onclick="return confirm('Удалить плейлист?');">
+                                <f:ajax execute="@this"
+                                        render="playlistsTableWrapper messages"/>
+                            </h:commandButton>
+
+                        </div>
+
+                    </h:column>
+
+                </h:dataTable>
+
+            </h:panelGroup>
+
+            <dialog id="playlistDialog" class="modal">
+
+                <h:panelGroup id="playlistDialogContent" layout="block">
+
+                    <h2>
+                        #{playlistController.playlist.id == null
+                          ? 'Добавить плейлист'
+                          : 'Редактировать плейлист'}
+                    </h2>
+
+                    <h:panelGrid columns="2">
+
+                        <h:outputLabel value="Название:"/>
+
+                        <h:inputText
+                                value="#{playlistController.playlist.title}"
+                                required="true"
+                                requiredMessage="Введите название плейлиста"/>
+
+                        <h:outputLabel value="Пользователь:"/>
+
+                        <h:selectOneMenu
+                                value="#{playlistController.selectedUserId}"
+                                required="true"
+                                requiredMessage="Выберите пользователя">
+
+                            <f:selectItem
+                                    itemLabel="Выберите пользователя"
+                                    itemValue="#{null}"
+                                    noSelectionOption="true"/>
+
+                            <f:selectItems
+                                    value="#{playlistController.users}"
+                                    var="u"
+                                    itemValue="#{u.id}"
+                                    itemLabel="#{u.username}"/>
+
+                        </h:selectOneMenu>
+
+                    </h:panelGrid>
+
+                    <div class="modal-actions">
+
+                        <h:commandButton value="Сохранить"
+                                         action="#{playlistController.save}"
+                                         styleClass="save-button">
+                            <f:ajax execute="@form"
+                                    render="playlistsTableWrapper playlistDialogContent messages"
+                                    onevent="closePlaylistDialog"/>
+                        </h:commandButton>
+
+                        <h:commandButton value="Отмена"
+                                         action="#{playlistController.cancel}"
+                                         immediate="true"
+                                         styleClass="cancel-button">
+                            <f:ajax execute="@this"
+                                    render="playlistDialogContent"
+                                    onevent="closePlaylistDialog"/>
+                        </h:commandButton>
+
+                    </div>
+
+                </h:panelGroup>
+
+            </dialog>
+
+        </h:form>
+
+    </div>
+
+    <script>
+
+        function openPlaylistDialog(data) {
+
+            if (data.status === 'success') {
+
+                const dialog =
+                    document.getElementById('playlistDialog');
+
+                if (!dialog.open) {
+                    dialog.showModal();
+                }
+
+            }
+
+        }
+
+        function closePlaylistDialog(data) {
+
+            if (data.status === 'success') {
+
+                const messages =
+                    document.getElementById('playlistForm:messages');
+
+                if (!messages || messages.textContent.trim() === '') {
+
+                    document.getElementById('playlistDialog').close();
+
+                }
+
+            }
+
+        }
+
+
+        function toggleEditMode() {
+            document.body.classList.toggle('edit-mode');
+        }
+
+    </script>
+
+</h:body>
+</html>

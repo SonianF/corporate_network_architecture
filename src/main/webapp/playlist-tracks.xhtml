@@ -1,0 +1,234 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core">
+
+<h:head>
+    <title>Треки плейлиста</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+</h:head>
+
+<h:body>
+
+    <div class="container">
+
+        <h:link outcome="playlists" value="← Назад к плейлистам"/>
+
+        <h:form id="trackForm">
+
+            <h:panelGroup
+                    rendered="#{not empty playlistTracksController.playlist}"
+                    layout="block">
+
+                <div class="page-header">
+
+                    <h1>
+                        Плейлист:
+                        #{playlistTracksController.playlist.title}
+                    </h1>
+
+                    <div class="header-actions">
+
+                        <h:commandButton value="+"
+                                         action="#{playlistTracksController.prepareNew}"
+                                         styleClass="icon-button add-button">
+                            <f:ajax execute="@this"
+                                    render="trackDialogContent"
+                                    onevent="openTrackDialog"/>
+                        </h:commandButton>
+
+                        <button type="button"
+                                class="icon-button edit-button"
+                                onclick="toggleEditMode()">
+                            ✎
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div class="playlist-info">
+
+                    <p>
+                        <strong>Владелец:</strong>
+                        #{playlistTracksController.playlist.user.username}
+                    </p>
+
+                </div>
+
+                <h:messages id="messages"
+                            styleClass="messages"
+                            errorClass="error-message"/>
+
+                <h:panelGroup id="tracksTableWrapper" layout="block">
+
+                    <h:dataTable
+                            value="#{playlistTracksController.playlist.tracks}"
+                            var="t"
+                            styleClass="data-table"
+                            rendered="#{not empty playlistTracksController.playlist.tracks}">
+
+                        <h:column>
+                            <f:facet name="header">Название трека</f:facet>
+                            #{t.title}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Исполнитель</f:facet>
+                            #{t.artist.name}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Длительность</f:facet>
+                            #{t.durationFormatted}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">Количество прослушиваний</f:facet>
+                            #{t.playCount}
+                        </h:column>
+
+                        <h:column>
+
+                            <div class="row-actions">
+
+                                <h:commandButton value="✎"
+                                                 action="#{playlistTracksController.edit(t.id)}"
+                                                 styleClass="small-edit">
+                                    <f:ajax execute="@this"
+                                            render="trackDialogContent"
+                                            onevent="openTrackDialog"/>
+                                </h:commandButton>
+
+                                <h:commandButton value="✕"
+                                                 action="#{playlistTracksController.removeTrack(t.id)}"
+                                                 styleClass="small-delete"
+                                                 onclick="return confirm('Удалить трек из плейлиста?');">
+                                    <f:ajax execute="@this"
+                                            render="tracksTableWrapper messages"/>
+                                </h:commandButton>
+
+                            </div>
+
+                        </h:column>
+
+                    </h:dataTable>
+
+                    <h:outputText
+                            value="В этом плейлисте пока нет треков."
+                            rendered="#{empty playlistTracksController.playlist.tracks}"/>
+
+                </h:panelGroup>
+
+                <dialog id="trackDialog" class="modal">
+
+                    <h:panelGroup id="trackDialogContent" layout="block">
+
+                        <h2>
+                            #{playlistTracksController.selectedTrack.id == null
+                              ? 'Добавить трек'
+                              : 'Редактировать трек'}
+                        </h2>
+
+                        <h:panelGrid columns="2">
+
+                            <h:outputLabel value="Трек:"/>
+
+                            <h:selectOneMenu
+                                    value="#{playlistTracksController.selectedTrackId}"
+                                    required="true"
+                                    requiredMessage="Выберите трек">
+
+                                <f:selectItem
+                                        itemLabel="Выберите трек"
+                                        itemValue="#{null}"
+                                        noSelectionOption="true"/>
+
+                                <f:selectItems
+                                        value="#{playlistTracksController.availableTracks}"
+                                        var="track"
+                                        itemValue="#{track.id}"
+                                        itemLabel="#{track.title} - #{track.artist.name}"/>
+
+                            </h:selectOneMenu>
+
+                        </h:panelGrid>
+
+                        <div class="modal-actions">
+
+                            <h:commandButton value="Сохранить"
+                                             action="#{playlistTracksController.saveTrack}"
+                                             styleClass="save-button">
+                                <f:ajax execute="@form"
+                                        render="tracksTableWrapper trackDialogContent messages"
+                                        onevent="closeTrackDialog"/>
+                            </h:commandButton>
+
+                            <h:commandButton value="Отмена"
+                                             action="#{playlistTracksController.cancel}"
+                                             immediate="true"
+                                             styleClass="cancel-button">
+                                <f:ajax execute="@this"
+                                        render="trackDialogContent"
+                                        onevent="closeTrackDialog"/>
+                            </h:commandButton>
+
+                        </div>
+
+                    </h:panelGroup>
+
+                </dialog>
+
+            </h:panelGroup>
+
+            <h:outputText
+                    value="Плейлист не найден."
+                    rendered="#{empty playlistTracksController.playlist}"/>
+
+        </h:form>
+
+    </div>
+
+    <script>
+
+        function openTrackDialog(data) {
+
+            if (data.status === 'success') {
+
+                const dialog =
+                    document.getElementById('trackDialog');
+
+                if (!dialog.open) {
+                    dialog.showModal();
+                }
+
+            }
+
+        }
+
+        function closeTrackDialog(data) {
+
+            if (data.status === 'success') {
+
+                const messages =
+                    document.getElementById('trackForm:messages');
+
+                if (!messages || messages.textContent.trim() === '') {
+
+                    document.getElementById('trackDialog').close();
+
+                }
+
+            }
+
+        }
+
+        function toggleEditMode() {
+            document.body.classList.toggle('edit-mode');
+        }
+
+    </script>
+
+</h:body>
+</html>

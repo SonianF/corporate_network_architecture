@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core">
+
+<h:head>
+    <title>Треки</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+</h:head>
+
+<h:body>
+
+    <div class="container">
+
+        <h:link outcome="index" value="← Home"/>
+
+        <h:form id="trackForm">
+
+            <div class="page-header">
+
+                <h1>Треки</h1>
+
+                <div class="header-actions">
+
+                    <h:commandButton value="+"
+                                     action="#{trackController.prepareNew}"
+                                     styleClass="icon-button add-button">
+                        <f:ajax execute="@this"
+                                render="trackDialogContent"
+                                onevent="openTrackDialog"/>
+                    </h:commandButton>
+
+                    <button type="button"
+                            class="icon-button edit-button"
+                            onclick="toggleEditMode()">
+                        ✎
+                    </button>
+
+                </div>
+
+            </div>
+
+            <h:messages id="messages"
+                        styleClass="messages"
+                        errorClass="error-message"/>
+
+            <h:panelGroup id="tracksTableWrapper" layout="block">
+
+                <h:dataTable value="#{trackController.tracks}"
+                             var="t"
+                             styleClass="data-table">
+
+                    <h:column>
+                        <f:facet name="header">Название трека</f:facet>
+                        #{t.title}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Исполнитель</f:facet>
+                        #{t.artist.name}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Длительность</f:facet>
+                        #{t.durationFormatted}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">Количество прослушиваний</f:facet>
+                        #{t.playCount}
+                    </h:column>
+
+                    <h:column>
+
+                        <div class="row-actions">
+
+                            <h:commandButton value="✎"
+                                             action="#{trackController.edit(t.id)}"
+                                             styleClass="small-edit">
+                                <f:ajax execute="@this"
+                                        render="trackDialogContent"
+                                        onevent="openTrackDialog"/>
+                            </h:commandButton>
+
+                            <h:commandButton value="✕"
+                                             action="#{trackController.delete(t.id)}"
+                                             styleClass="small-delete"
+                                             onclick="return confirm('Удалить трек?');">
+                                <f:ajax execute="@this"
+                                        render="tracksTableWrapper messages"/>
+                            </h:commandButton>
+
+                        </div>
+
+                    </h:column>
+
+                </h:dataTable>
+
+            </h:panelGroup>
+
+            <dialog id="trackDialog" class="modal">
+
+                <h:panelGroup id="trackDialogContent" layout="block">
+
+                    <h2>
+                        #{trackController.track.id == null
+                          ? 'Добавить трек'
+                          : 'Редактировать трек'}
+                    </h2>
+
+                    <h:panelGrid columns="2">
+
+                        <h:outputLabel value="Название трека:"/>
+
+                        <h:inputText
+                                value="#{trackController.track.title}"
+                                required="true"
+                                requiredMessage="Введите название трека"/>
+
+                        <h:outputLabel value="Длительность (секунды):"/>
+
+                        <h:inputText
+                                value="#{trackController.track.durationSec}"/>
+
+                        <h:outputLabel value="Количество прослушиваний:"/>
+
+                        <h:inputText
+                                value="#{trackController.track.playCount}"/>
+
+                        <h:outputLabel value="Исполнитель:"/>
+
+                        <h:selectOneMenu
+                                value="#{trackController.selectedArtistId}"
+                                required="true"
+                                requiredMessage="Выберите исполнителя">
+
+                            <f:selectItem itemLabel="Выберите исполнителя"
+                                          itemValue="#{null}"
+                                          noSelectionOption="true"/>
+
+                            <f:selectItems
+                                    value="#{trackController.artists}"
+                                    var="a"
+                                    itemValue="#{a.id}"
+                                    itemLabel="#{a.name}"/>
+
+                        </h:selectOneMenu>
+
+                    </h:panelGrid>
+
+                    <div class="modal-actions">
+
+                        <h:commandButton value="Сохранить"
+                                         action="#{trackController.save}"
+                                         styleClass="save-button">
+                            <f:ajax execute="@form"
+                                    render="tracksTableWrapper trackDialogContent messages"
+                                    onevent="closeTrackDialog"/>
+                        </h:commandButton>
+
+                        <h:commandButton value="Отмена"
+                                         action="#{trackController.cancel}"
+                                         immediate="true"
+                                         styleClass="cancel-button">
+                            <f:ajax execute="@this"
+                                    render="trackDialogContent"
+                                    onevent="closeTrackDialog"/>
+                        </h:commandButton>
+
+                    </div>
+
+                </h:panelGroup>
+
+            </dialog>
+
+        </h:form>
+
+    </div>
+
+    <script>
+
+        function openTrackDialog(data) {
+
+            if (data.status === 'success') {
+
+                const dialog =
+                    document.getElementById('trackDialog');
+
+                if (!dialog.open) {
+                    dialog.showModal();
+                }
+
+            }
+
+        }
+
+        function closeTrackDialog(data) {
+
+            if (data.status === 'success') {
+
+                const messages =
+                    document.getElementById('trackForm:messages');
+
+                if (!messages || messages.textContent.trim() === '') {
+
+                    document.getElementById('trackDialog').close();
+
+                }
+
+            }
+
+        }
+
+        function toggleEditMode() {
+            document.body.classList.toggle('edit-mode');
+        }
+
+    </script>
+
+</h:body>
+</html>
